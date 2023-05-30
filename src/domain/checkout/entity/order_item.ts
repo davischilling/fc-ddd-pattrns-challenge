@@ -41,6 +41,16 @@ export default class OrderItem {
     return this._price;
   }
 
+  addItem(): void {
+    this._quantity++;
+    this._total = this.total();
+  }
+
+  removeItem(): void {
+    this._quantity--;
+    this._total = this.total();
+  }
+
   total(): number {
     return this._price * this._quantity
   }

@@ -37,7 +37,125 @@ describe("Order unit tests", () => {
   it("should throw error if the item qte is less or equal zero 0", () => {
     expect(() => {
       const item = new OrderItem("i1", "Item 1", 100, "p1", 0);
-      const order = new Order("o1", "c1", [item]);
+      new Order("o1", "c1", [item]);
     }).toThrowError("Quantity must be greater than 0");
+  });
+
+  it("should add item", () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    expect(item.quantity).toBe(1);
+
+    item.addItem()
+    expect(item.quantity).toBe(2);
+  });
+
+  it("should remove item", () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    expect(item.quantity).toBe(1);
+
+    item.removeItem()
+    expect(item.quantity).toBe(0);
+  });
+
+  it("should increase item qte", () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    const item2 = new OrderItem("i2", "Item 2", 50, "p2", 2);
+    const order = new Order("o1", "c1", [item, item2]);
+    expect(order.items.length).toBe(2);
+    expect(order.total()).toBe(200);
+    expect(item.quantity).toBe(1);
+    expect(item2.quantity).toBe(2);
+
+    order.increaseOrderItemQte("i1");
+    expect(order.items.length).toBe(2);
+    expect(order.total()).toBe(300);
+    expect(item.quantity).toBe(2);
+    expect(item2.quantity).toBe(2);
+  });
+
+  it("should decrease item qte", () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 2);
+    const order = new Order("o1", "c1", [item]);
+    expect(order.items.length).toBe(1);
+    expect(order.total()).toBe(200);
+    expect(item.quantity).toBe(2);
+
+    order.decreaseOrderItemQte("i1");
+    expect(order.items.length).toBe(1);
+    expect(order.total()).toBe(100);
+    expect(item.quantity).toBe(1);
+  });
+
+  it('should remove item from order items list if item qte is zero', () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    const item2 = new OrderItem("i2", "Item 2", 50, "p2", 2);
+    const order = new Order("o1", "c1", [item, item2]);
+    expect(order.items.length).toBe(2);
+    expect(order.total()).toBe(200);
+    expect(item.quantity).toBe(1);
+    expect(item2.quantity).toBe(2);
+
+    order.decreaseOrderItemQte("i1");
+    expect(order.items.length).toBe(1);
+    expect(order.total()).toBe(100);
+    expect(item.quantity).toBe(0);
+    expect(item2.quantity).toBe(2);
+    expect(order.items).toStrictEqual([item2]);
+  })
+
+  it('should throw if order items length is zero', () => {
+    expect(() => {
+      const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+      const order = new Order("o1", "c1", [item]);
+      order.decreaseOrderItemQte("i1");
+    }).toThrowError("Items are required");
+  })
+
+  it('should increase item qte if added item is already on the list', () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    const order = new Order("o1", "c1", [item]);
+    expect(order.items.length).toBe(1);
+    expect(order.total()).toBe(100);
+    expect(item.quantity).toBe(1);
+
+    order.addItem(item);
+    expect(order.items.length).toBe(1);
+    expect(order.total()).toBe(200);
+    expect(item.quantity).toBe(2);
+  })
+
+  it('should add OrderItem to order', () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    const item2 = new OrderItem("i2", "Item 2", 50, "p2", 2);
+    const order = new Order("o1", "c1", [item]);
+    expect(order.items.length).toBe(1);
+    expect(order.total()).toBe(100);
+
+    order.addItem(item2);
+    expect(order.items.length).toBe(2);
+    expect(order.total()).toBe(200);
+    expect(item.quantity).toBe(1);
+    expect(item2.quantity).toBe(2);
+  })
+
+  it('should throw error if item does not exist in order', () => {
+    expect(() => {
+      const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+      const order = new Order("o1", "c1", [item]);
+      order.removeItem("i2");
+    }).toThrowError("Item does not exists in order");
+  });
+
+  it('should remove item from order', () => {
+    const item = new OrderItem("i1", "Item 1", 100, "p1", 1);
+    const item2 = new OrderItem("i2", "Item 2", 50, "p2", 2);
+    const order = new Order("o1", "c1", [item, item2]);
+    expect(order.items.length).toBe(2);
+    expect(order.total()).toBe(200);
+
+    order.removeItem("i1");
+    expect(order.items.length).toBe(1);
+    expect(order.total()).toBe(100);
+    expect(order.items).toStrictEqual([item2]);
   });
 });
