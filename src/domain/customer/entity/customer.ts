@@ -42,7 +42,7 @@ export default class Customer {
   get Address(): Address {
     return this._address;
   }
-  
+
   changeAddress(address: Address) {
     this._address = address;
   }
@@ -68,5 +68,9 @@ export default class Customer {
 
   set Address(address: Address) {
     this._address = address;
+  }
+
+  static fmtAddress(address: Address) {
+    return `${address.street}, ${address.number} - ${address.city}/${address.zip}`;
   }
 }
