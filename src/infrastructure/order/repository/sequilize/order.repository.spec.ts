@@ -105,10 +105,12 @@ describe("Order repository test", () => {
     const orderRepository = new OrderRepository();
     await orderRepository.create(order);
 
-    const foundOrder = (await OrderModel.findOne({
-      where: { id: order.id },
-      include: ["items"],
-    })).toJSON();
+    const foundOrder = (
+      await OrderModel.findOne({
+        where: { id: order.id },
+        include: ["items"],
+      })
+    ).toJSON();
     expect(foundOrder).toStrictEqual({
       id: "123",
       customer_id: "123",
@@ -130,10 +132,13 @@ describe("Order repository test", () => {
     order.addItem(new OrderItem("2", "Product 2", 20, "123", 1));
     await orderRepository.update(order);
 
-    const foundUpdatedOrder = (await OrderModel.findOne({
-      where: { id: order.id },
-      include: ["items"],
-    })).toJSON();
+    const foundUpdatedOrder = (
+      await OrderModel.findOne({
+        where: { id: order.id },
+        include: ["items"],
+      })
+    ).toJSON();
+
     expect(foundUpdatedOrder).toStrictEqual({
       id: "123",
       customer_id: "123",
@@ -144,6 +149,14 @@ describe("Order repository test", () => {
           name: order.items[0].name,
           price: order.items[0].price,
           quantity: order.items[0].quantity,
+          order_id: "123",
+          product_id: "123",
+        },
+        {
+          id: order.items[1].id,
+          name: order.items[1].name,
+          price: order.items[1].price,
+          quantity: order.items[1].quantity,
           order_id: "123",
           product_id: "123",
         },
@@ -181,7 +194,9 @@ describe("Order repository test", () => {
   it("should throw an error when order is not found", async () => {
     const orderRepository = new OrderRepository();
 
-    await expect(orderRepository.find("456ABC")).rejects.toThrow("Order not found");
+    await expect(orderRepository.find("456ABC")).rejects.toThrow(
+      "Order not found"
+    );
   });
 
   it("should find all orders", async () => {
